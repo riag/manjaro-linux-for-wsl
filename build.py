@@ -3,6 +3,7 @@
 import click
 import os
 import subprocess
+import io
 
 import pybee
 from pybee.path import working_dir
@@ -56,6 +57,9 @@ def make_bootstrap(arch, repo):
     pybee.shell.exec(
             cmd_list
             )
+def append_text_to_file(fpath, text, encoding='utf-8'):
+    with io.open(fpath, 'a',encoding=encoding) as f:
+        f.write(text)
 
 def make_wsl_linux_dist():
     with working_dir(os.path.join(script_dir, 'configs')):
@@ -64,10 +68,14 @@ def make_wsl_linux_dist():
                 os.path.join(linux_dest_dir, 'etc')
                 )
 
+    append_text_to_file(
+            os.path.join(linux_dest_dir, 'etc', 'locale.gen'),
+            'en_US.UTF-8 UTF-8'
+            )
+    pybee.shell.exec(['locale-gen'])
+
 def pack():
-    '''
-    tar --ignore-failed-read -czvf ..//install.tar.gz *
-    '''
+
     print('')
     print('tar %s .....' % linux_dest_dir)
     p = os.path.join(dist_dir, dist_file_name)
