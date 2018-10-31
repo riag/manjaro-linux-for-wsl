@@ -213,6 +213,7 @@ main() {
   [[ -n "$USE_QEMU" ]] && configure_static_qemu "$ARCH" "$DEST"
 
   [[ -f "$DEST/etc/ssl/certs/ca-certificates.crt" ]] && rm -f "$DEST/etc/ssl/certs/ca-certificates.crt"
+  [[ -L "$DEST/etc/ssl/certs/ca-certificates.crt" ]] && rm -f "$DEST/etc/ssl/certs/ca-certificates.crt"
   /bin/cp -f ./certs/ca-certificates.crt "$DEST/etc/ssl/certs/"
 
   install_packages "$ARCH" "$DEST" "${BASIC_PACKAGES[*]} ${EXTRA_PACKAGES[*]}"
