@@ -212,7 +212,8 @@ main() {
   configure_minimal_system "$DEST"
   [[ -n "$USE_QEMU" ]] && configure_static_qemu "$ARCH" "$DEST"
 
-  [[ -f "./certs/ca-certificates.crt" ]] && /bin/cp -f ./certs/ca-certificates.crt "$DEST/etc/ssl/certs/"
+  [[ -f "$DEST/etc/ssl/certs/ca-certificates.crt" ]] && rm -f "$DEST/etc/ssl/certs/ca-certificates.crt"
+  /bin/cp -f ./certs/ca-certificates.crt "$DEST/etc/ssl/certs/"
 
   install_packages "$ARCH" "$DEST" "${BASIC_PACKAGES[*]} ${EXTRA_PACKAGES[*]}"
   configure_pacman "$DEST" "$ARCH" # Pacman must be re-configured
