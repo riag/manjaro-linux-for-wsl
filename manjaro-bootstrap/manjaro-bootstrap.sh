@@ -111,7 +111,7 @@ configure_pacman() {
   debug "configure DNS and pacman"
   cp "/etc/resolv.conf" "$DEST/etc/resolv.conf"
   SERVER=$(get_template_repo_url "$REPO_URL" "$ARCH")
-  echo "Server = $SERVER" >> "$DEST/etc/pacman.d/mirrorlist"
+  echo "Server = $SERVER" > "$DEST/etc/pacman.d/mirrorlist"
 }
 
 configure_minimal_system() {
