@@ -55,9 +55,11 @@ fetch_file() {
   local FILEPATH=$1
   shift
   if [[ -e "$FILEPATH" ]]; then
-    curl -L -z "$FILEPATH" -o "$FILEPATH" "$@"
+    #curl -L -z "$FILEPATH" -o "$FILEPATH" "$@"
+    echo "$FILEPATH is already exist"
   else
-    curl -L -o "$FILEPATH" "$@"
+    curl -L -o "${FILEPATH}.tmp" "$@"
+    mv "${FILEPATH}.tmp" "$FILEPATH"
   fi
 }
 
