@@ -74,6 +74,12 @@ def make_wsl_linux_dist():
             )
     pybee.shell.exec(['locale-gen'])
 
+    with working_dir(os.path.join(script_dir, 'configs', 'profile.d')):
+        pybee.path.copyfiles(
+                ['display.sh'],
+                os.path.join(linux_dest_dir, 'etc', 'profile.d')
+                )
+
 def pack():
 
     print('')
