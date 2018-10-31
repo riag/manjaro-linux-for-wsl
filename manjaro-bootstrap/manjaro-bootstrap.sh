@@ -30,7 +30,7 @@ BASIC_PACKAGES=(${PACMAN_PACKAGES[*]} filesystem)
 EXTRA_PACKAGES=(coreutils bash grep gawk file tar sed manjaro-release)
 DEFAULT_REPO_URL="http://repo.manjaro.org.uk"
 DEFAULT_ARM_REPO_URL="http://mirror.archlinuxarm.org"
-DEFAULT_BRANCH="unstable"
+DEFAULT_BRANCH="stable"
 
 # Read from config file is present to override variables
 [ -f config.sh ] && . config.sh
