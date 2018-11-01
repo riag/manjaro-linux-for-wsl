@@ -61,11 +61,17 @@ def append_text_to_file(fpath, text, encoding='utf-8'):
     with io.open(fpath, 'a',encoding=encoding) as f:
         f.write(text)
 
-def exec_command_in_chroot_env(dest_dir, cmd_list):
+def exec_command_in_chroot_env(dest_dir, cmd, **kwargs):
     chroot_cmd_list = ['chroot', dest_dir, ]
-    chroot_cmd_list.extend(cmd_list)
+    c = None
+    if type(cmd) is str:
+        chroot_cmd_list.append(cmd)
+        c = ' '.join(chroot_cmd_list)
+    else:
+        chroot_cmd_list.extend(cmd_list)
+        c = chroot_cmd_list
 
-    pybee.shell.exec(chroot_cmd_list)
+    pybee.shell.exec(c, **kwargs)
 
 def make_wsl_linux_dist():
     with working_dir(os.path.join(script_dir, 'configs')):
