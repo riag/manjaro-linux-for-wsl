@@ -76,7 +76,7 @@ def make_wsl_linux_dist():
 
     with working_dir(os.path.join(script_dir, 'configs', 'profile.d')):
         pybee.path.copyfiles(
-                ['display.sh'],
+                ['display.sh', 'wsl.sh'],
                 os.path.join(linux_dest_dir, 'etc', 'profile.d')
                 )
 
