@@ -88,9 +88,11 @@ def pack():
     if os.path.isfile(p):
         os.unlink(p)
 
-    pybee.compress.tar_gz(
-            p , linux_dest_dir
-            )
+    with working_dir(linux_dest_dir):
+        pybee.shell.exec(
+                ['tar', '--ignore-failed-read', 
+                    '-czvf', p, '*']
+                )
     print('finish, dist file is %s' % p)
 
 @click.command()
