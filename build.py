@@ -68,7 +68,7 @@ def exec_command_in_chroot_env(dest_dir, cmd, **kwargs):
         chroot_cmd_list.append(cmd)
         c = ' '.join(chroot_cmd_list)
     else:
-        chroot_cmd_list.extend(cmd_list)
+        chroot_cmd_list.extend(cmd)
         c = chroot_cmd_list
 
     pybee.shell.exec(c, **kwargs)
