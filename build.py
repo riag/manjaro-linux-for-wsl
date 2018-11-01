@@ -103,7 +103,7 @@ def pack():
 
 @click.command()
 @click.option('-a','--arch', default='x86_64')
-@click.option('-r', '--repo', default='https://mirrors.shu.edu.cn/manjaro')
+@click.option('-r', '--repo', default='https://mirrors.tuna.tsinghua.edu.cn/manjaro')
 def main(arch, repo):
 
     prepare(arch)
