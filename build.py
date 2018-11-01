@@ -61,6 +61,12 @@ def append_text_to_file(fpath, text, encoding='utf-8'):
     with io.open(fpath, 'a',encoding=encoding) as f:
         f.write(text)
 
+def exec_command_in_chroot_env(dest_dir, cmd_list):
+    chroot_cmd_list = ['chroot', dest_dir, ]
+    chroot_cmd_list.extend(cmd_list)
+
+    pybee.shell.exec(chroot_cmd_list)
+
 def make_wsl_linux_dist():
     with working_dir(os.path.join(script_dir, 'configs')):
         pybee.path.copyfiles(
@@ -70,9 +76,9 @@ def make_wsl_linux_dist():
 
     append_text_to_file(
             os.path.join(linux_dest_dir, 'etc', 'locale.gen'),
-            'en_US.UTF-8 UTF-8'
+            '\nen_US.UTF-8 UTF-8'
             )
-    pybee.shell.exec(['locale-gen'])
+    exec_command_in_chroot_env(linux_dest_dir, ['locale-gen'])
 
     with working_dir(os.path.join(script_dir, 'configs', 'profile.d')):
         pybee.path.copyfiles(
