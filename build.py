@@ -95,9 +95,12 @@ def pack():
         os.unlink(p)
 
     with working_dir(linux_dest_dir):
-        pybee.shell.exec(
+        cmd = ' '.join(
                 ['tar', '--ignore-failed-read', 
                     '-czvf', p, '*']
+                )
+        pybee.shell.exec(
+                cmd, shell=True
                 )
     print('finish, dist file is %s' % p)
 
