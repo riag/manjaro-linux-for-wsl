@@ -1,0 +1,128 @@
+
+
+## Fonts
+cantarell-fonts
+# noto-fonts             # default font
+# noto-fonts-cjk         # big package, ~76 mb compressed
+# >extra noto-fonts-emoji
+terminus-font
+ttf-bitstream-vera       # xfce4-terminal default Monospace
+# ttf-dejavu             # Installed as gnome-themes-standard dependency
+ttf-inconsolata
+ttf-indic-otf
+ttf-liberation
+ttf-droid
+
+## GTK3
+gtk3-classic
+lib32-gtk3-classic
+
+## XFCE Group
+exo-gtk3
+garcon-gtk3
+thunar-gtk3
+thunar-volman
+tumbler
+xfce4-appfinder-gtk3
+xfce4-panel-gtk3
+xfce4-power-manager-gtk3
+xfce4-session-gtk3
+xfce4-settings-gtk3
+xfce4-terminal
+xfconf-gtk3
+xfdesktop-gtk3
+xfwm4-gtk3
+
+
+## XFCE Extras
+blueman
+ffmpegthumbnailer  # tumbler - for video thumbnails
+freetype2          # tumbler - for font thumbnails
+gksu
+gnome-keyring      # fix wlan segfault
+libgsf             # tumbler - for ODF thumbnails
+libopenraw         # tumbler - for RAW thumbnails
+light-locker
+network-manager-applet
+menulibre
+orage
+poppler-glib       # tumbler - for PDF thumbnails
+thunar-archive-plugin
+file-roller
+thunar-media-tags-plugin
+# >extra xfce4-artwork
+xfce4-battery-plugin
+xfce4-clipman-plugin
+>extra xfce4-cpufreq-plugin
+>extra xfce4-cpugraph-plugin
+# xfce4-datetime-plugin
+>extra xfce4-dict
+>extra xfce4-diskperf-plugin
+>extra xfce4-fsguard-plugin
+>extra xfce4-genmon-plugin
+>extra xfce4-mailwatch-plugin
+>extra xfce4-mount-plugin
+>extra xfce4-mpc-plugin
+>extra xfce4-netload-plugin
+>extra xfce4-notes-plugin
+xfce4-notifyd-gtk3
+xfce4-screenshooter
+>extra xfce4-sensors-plugin
+>extra xfce4-smartbookmark-plugin
+>extra xfce4-systemload-plugin
+xfce4-taskmanager
+>extra xfce4-time-out-plugin
+>extra xfce4-timer-plugin
+>extra xfce4-verve-plugin
+>extra xfce4-wavelan-plugin
+>extra xfce4-weather-plugin
+xfce4-whiskermenu-plugin-gtk3
+xfce4-xkb-plugin
+xfce4-pulseaudio-plugin
+pavucontrol
+
+
+## Themes
+>extra manjaro-wallpapers-18.0
+>extra wallpapers-2018
+gnome-icon-theme
+gnome-themes-standard
+grub-theme-manjaro
+matcha-gtk-theme
+xcursor-simpleandsoft
+xcursor-vanilla-dmz-aa
+
+## Settings packages
+>extra manjaro-xfce-gtk3-settings
+>basic manjaro-xfce-gtk3-minimal-settings
+manjaro-browser-settings
+
+## Desktop Utils
+perl-file-mimeinfo
+xdg-utils
+xdg-su
+
+## Misc
+manjaro-hotfixes
+
+
+## Xorg Input Drivers
+xf86-input-elographics
+xf86-input-evdev
+xf86-input-keyboard
+xf86-input-libinput
+xf86-input-mouse
+xf86-input-void
+
+
+## Applications
+>extra catfish
+dmidecode # optional dependency inxi
+>extra firefox
+manjaro-hello
+manjaro-application-utility
+manjaro-settings-manager
+manjaro-settings-manager-notifier
+
+
+
