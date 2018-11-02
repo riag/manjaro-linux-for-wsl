@@ -11,23 +11,26 @@ from pybee.path import working_dir
 current_dir = os.path.abspath(os.getcwd())
 script_dir = os.path.abspath(os.path.dirname(__file__))
 
-build_dir = os.path.join(script_dir, 'build')
+default_build_dir = os.path.join(script_dir, 'build')
 dist_dir = os.path.join(script_dir, 'dist')
 
+work_dir = ''
 download_dir = '' 
 linux_dest_dir = ''
 
 dist_file_name=''
 
-def prepare(arch):
+def prepare(arg_work_dir, arch):
     global download_dir
     global linux_dest_dir
     global dist_file_name
+    global work_dir
 
-    download_dir = os.path.join(build_dir,
+    work_dir = arg_work_dir
+    download_dir = os.path.join(work_dir,
             arch, 'download'
             )
-    linux_dest_dir = os.path.join(build_dir,
+    linux_dest_dir = os.path.join(work_dir,
             arch, 'wsl-dist', 'root.%s' % arch
             )
 
@@ -92,6 +95,19 @@ def make_wsl_linux_dist():
                 os.path.join(linux_dest_dir, 'etc', 'profile.d')
                 )
 
+    '''
+    pybee.path.save_text_file(
+            os.path.join(linux_dest_dir, 'etc', 'sudoers'),
+            'Defaults lecture_file = /etc/sudoers.lecture'
+            )
+    pybee.path.save_text_file(
+            os.path.join(linux_dest_dir, 'etc', 'sudoers.lecture'),
+            'Enter your UNIX password below. This is not your Windows password.'
+            )
+    '''
+
+    exec_command_in_chroot_env(linux_dest_dir, ['pacman', '--noconfirm', '-Scc' ])
+
 def pack():
 
     print('')
@@ -114,9 +130,10 @@ def pack():
 @click.command()
 @click.option('-a','--arch', default='x86_64')
 @click.option('-r', '--repo', default='https://mirrors.tuna.tsinghua.edu.cn/manjaro')
-def main(arch, repo):
+@click.option('-w', '--work-dir', default=default_build_dir)
+def main(arch, repo, work_dir):
 
-    prepare(arch)
+    prepare(work_dir, arch)
 
     make_bootstrap(arch, repo)
 
