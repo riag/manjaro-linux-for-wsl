@@ -28,7 +28,7 @@ def prepare(arch):
             arch, 'download'
             )
     linux_dest_dir = os.path.join(build_dir,
-            arch, 'wsl-dist'
+            arch, 'wsl-dist', 'root.%s' % arch
             )
 
     dist_file_name = 'manjaro-linux-wsl-%s-%s.tar.gz' % (
@@ -100,7 +100,8 @@ def pack():
     if os.path.isfile(p):
         os.unlink(p)
 
-    with working_dir(linux_dest_dir):
+    cwd_dir = os.path.dirname(linux_dest_dir)
+    with working_dir(cwd_dir):
         cmd = ' '.join(
                 ['tar', '--ignore-failed-read', 
                     '-czvf', p, '*']
