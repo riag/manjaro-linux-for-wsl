@@ -26,7 +26,7 @@ pipenv install --dev
 pipenv run python3 build.py -a x86_64 -w ~/manjaro-linux-rootfs
  ```
 
- **注意**: 第一次执行该命令时，会卡在一个地方(见下图)，直接按 `Ctrl+D` 中断打包过程，再执行一次该命令就好了
+ **注意**: 第一次执行该命令时，会卡在一个地方(见下图)，直接按 `Ctrl+C` 中断打包过程，再执行一次该命令就好了
 
 ![](./images/pack-error.png)
 
