@@ -6,7 +6,24 @@
 ## 分支说明
   官方维护的 manjaro-bootstrap 有一些 bug，所以把原代码复制到分支 `manjaro-bootstrap` 下，`master`分支是 fix bug 后的代码
 
+## 下载
+
+TODO: 提供已经打包好的压缩文件
+
+
+
 ## 使用
+
+下载 tar 文件后，建议使用 [LxRunOffline](https://github.com/DDoSolitary/LxRunOffline) 来安装，可以使用下面命令来安装
+
+```
+LxRunOffline.exe install -n manjaro-linux -f ../manjaro-linux-wsl-x86_64-2018-11-05.tar.gz -d G:\devel\wsl\manjaro-linux -r root.x86_64
+```
+
+**注意** 要修改上面安装命令的参数要实际的值
+
+## 打包
+
   打包脚本采用 Python 语言开发
 
 ### 依赖软件
