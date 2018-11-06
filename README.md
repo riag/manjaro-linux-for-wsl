@@ -8,13 +8,15 @@
 
 ## 下载
 
-TODO: 提供已经打包好的压缩文件
+可以从百度网盘下载已经打包好的 tar 文件
+
+最新 release 版本: https://pan.baidu.com/s/1e4VN2lcWXXlipTLDMrwujw
 
 
 
 ## 使用
 
-下载 tar 文件后，建议使用 [LxRunOffline](https://github.com/DDoSolitary/LxRunOffline) 来安装，可以使用下面命令来安装
+下载 tar 文件或者自己打包 tar 文件后，建议使用 [LxRunOffline](https://github.com/DDoSolitary/LxRunOffline) 来安装，可以使用下面命令来安装
 
 ```
 LxRunOffline.exe install -n manjaro-linux -f ../manjaro-linux-wsl-x86_64-2018-11-05.tar.gz -d G:\devel\wsl\manjaro-linux -r root.x86_64
