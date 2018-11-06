@@ -106,7 +106,10 @@ def make_wsl_linux_dist():
             )
     '''
 
-    exec_command_in_chroot_env(linux_dest_dir, ['pacman', '--noconfirm', '-Scc' ])
+    exec_command_in_chroot_env(
+            linux_dest_dir, ['pacman', '-Scc' ], 
+            input='yes\nyes\n'.encode('utf-8')
+            )
 
 def pack():
 
