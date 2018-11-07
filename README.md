@@ -1,7 +1,7 @@
 # manjaro-linux-for-wsl
 为 windows 10 WSL 而做的 Manjaro Linux 发行版本
 
-该项目是基于 [manjaro-bootstrap]() 而做的，该发行版本只打包了最基本的软件
+该项目是基于 [manjaro-bootstrap](https://gitlab.manjaro.org/tools/maintenance-tools/manjaro-bootstrap) 而做的，该发行版本只打包了最基本的软件
 
 ## 分支说明
   官方维护的 manjaro-bootstrap 有一些 bug，所以把原代码复制到分支 `manjaro-bootstrap` 下，`master`分支是 fix bug 后的代码
