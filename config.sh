@@ -6,6 +6,5 @@ EXTRA_PACKAGES+=(haveged) # for pacman-init
 EXTRA_PACKAGES+=(manjaro-tools-pkg sudo gzip)
 # utils tools, like ps netstate command tools
 EXTRA_PACKAGES+=(net-tools dnsutils inetutils iproute2 iputils procps)
-#EXTRA_PACKAGES+=(git)
-#EXTRA_PACKAGES+=(neovim tmux)
+EXTRA_PACKAGES+=(which pamac git tmux zsh zip)
 
