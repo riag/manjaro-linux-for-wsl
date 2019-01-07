@@ -51,11 +51,34 @@ def call_shell_command(cmd_list, work_dir=None, check=True, shell=False):
         cwd=work_dir).returncode
 
 
+class PipeCommand(object):
+    def __init__(self, cmd_list, **kw):
+        self.cmd_list = cmd_list
+        self.kw = kw
+
+
+def pipe_call_shell_command(pipe_cmd_list):
+    pre_stdout = subprocess.PIPE
+    last_p = None
+    for cmd in pipe_cmd_list:
+        kw = cmd.kw
+        kw['stdin'] = pre_stdout
+        kw['stdout'] = subprocess.PIPE
+        p = subprocess.Popen(
+            cmd.cmd_list, **kw
+        )
+        pre_stdout = p.stdout
+        last_p = p
+
+    last_p.wait()
+
+
+
 class BootstrapContext(object):
     def __init__(self, work_dir, download_dir, branch, arch=None):
         self.work_dir = work_dir
-
         self.download_dir = download_dir
+        self.dest_dir = os.path.join(work_dir, 'wsl-dist', 'root.%s' % arch)
 
         self.arch = arch
         self.branch = branch
@@ -185,6 +208,25 @@ def fetch_file(filepath, url):
     os.rename(tmp_file, filepath)
 
 
+def uncompress(filepath, dest_dir):
+    if filepath.endswith('gz'):
+        call_shell_command(
+            ['tar', 'xfz', filepath, '-C', dest_dir]
+        )
+        return
+    elif filepath.endswith('xz'):
+        pipe_call_shell_command(
+            [
+                PipeCommand(['xz', '-dc', filepath]),
+                PipeCommand(['tar', 'x', '-C', dest_dir])
+            ]
+        )
+        return
+
+    print("Error: unknown package format: $s" % filepath)
+    sys.exit(-1)
+
+
 def install_pacman_packages(context: BootstrapContext, package_name_list):
     for name in package_name_list:
         package_info = context.core_package_map.get(name, None)
@@ -196,6 +238,8 @@ def install_pacman_packages(context: BootstrapContext, package_name_list):
         package_url = context.core_repo_url + '/' + package_info.file_name
         fetch_file(filepath, package_url)
 
+        uncompress(filepath, context.dest_dir)
+
 
 @click.command()
 @click.option('-a', '--arch', default='x86_64')
@@ -204,7 +248,9 @@ def install_pacman_packages(context: BootstrapContext, package_name_list):
 @click.option('--download-dir', default=default_download_dir)
 def main(arch, repo, work_dir, download_dir):
 
-    context = BootstrapContext(work_dir, download_dir, DEFAULT_BRANCH, arch)
+    context = BootstrapContext(
+        work_dir, download_dir,
+        DEFAULT_BRANCH, arch)
     context.set_repo_url(repo)
 
     fetch_packages(context)
