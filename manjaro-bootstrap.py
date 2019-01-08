@@ -7,6 +7,7 @@ import sys
 from urllib import request
 import datetime
 import json
+import shutil
 
 import click
 
@@ -25,7 +26,7 @@ BASIC_PACKAGES = (
   'libunistring', 'zstd', 'libidn2', 'acl', 'archlinux-keyring',
   'attr', 'bzip2', 'curl', 'expat', 'glibc', 'gpgme', 'libarchive',
   'libassuan', 'libgpg-error', 'libnghttp2', 'libssh2', 'lzo',
-  'openssl', 'pacman', 'pacman-mirrors', 'xz', 'zlib',
+  'openssl', 'pacman', 'xz', 'zlib',
   'krb5', 'e2fsprogs', 'keyutils', 'libidn', 'gcc-libs', 'lz4',
   'libpsl', 'icu', 'filesystem'
 )
@@ -73,12 +74,18 @@ def pipe_call_shell_command(pipe_cmd_list):
     last_p.wait()
 
 
-
 class BootstrapContext(object):
     def __init__(self, work_dir, download_dir, branch, arch=None):
         self.work_dir = work_dir
         self.download_dir = download_dir
         self.dest_dir = os.path.join(work_dir, 'wsl-dist', 'root.%s' % arch)
+
+        call_shell_command(
+            ['mkdir', '-p', self.dest_dir]
+        )
+        call_shell_command(
+            ['mkdir', '-p', self.download_dir]
+        )
 
         self.arch = arch
         self.branch = branch
@@ -114,7 +121,7 @@ def fetch(context: BootstrapContext):
         return None
 
     output = output.decode('utf-8')
-    p = os.path.join(context.work_dir, 'core_repo.idex')
+    p = os.path.join(context.work_dir, '%s-core.repo' % context.arch)
     with io.open(p, 'w', encoding='utf-8') as f:
         f.write(output)
 
@@ -178,14 +185,16 @@ def fetch_packages(context: BootstrapContext):
             )
 
         t = package_map.get(name, None)
-        if t is not None and update_time < t.update_time:
+        #if t is not None and update_time < t.update_time:
+        #    continue
+        if t is not None and version < t.version:
             continue
 
         print("package is %s, %s" % (name, package))
         p = PackageInfo(name, version, package, update_time)
         package_map[name] = p
 
-    path = os.path.join(context.work_dir, 'core.pakcage.json')
+    path = os.path.join(context.work_dir, 'core.pakcages.json')
     with io.open(path, 'w', encoding='utf-8') as f:
         m = {}
         for k, v in package_map.items():
@@ -241,6 +250,62 @@ def install_pacman_packages(context: BootstrapContext, package_name_list):
         uncompress(filepath, context.dest_dir)
 
 
+def write_text_to_file(filepath, text):
+    with io.open(filepath, 'w', encoding='utf-8') as f:
+        f.write(text)
+
+
+def configure_pacman(context: BootstrapContext):
+    print("configure DNS and pacman")
+    shutil.copyfile(
+        '/etc/resolv.conf',
+        os.path.join(context.dest_dir, 'etc', 'resolv.conf')
+        )
+
+    pacman_d_dir = os.path.join(context.dest_dir, 'etc', 'pacman.d')
+    call_shell_command(
+        ['mkdir', '-p', pacman_d_dir]
+    )
+    write_text_to_file(
+        os.path.join(pacman_d_dir, 'mirrorlist'),
+        'Server = %s' % context.repo_url
+    )
+
+
+def configure_minimal_system(context: BootstrapContext):
+    call_shell_command(
+        ['mkdir', '-p', os.path.join(context.dest_dir, 'dev')]
+    )
+    call_shell_command(
+        ['touch', os.path.join(context.dest_dir, 'etc', 'group')]
+    )
+    write_text_to_file(
+        os.path.join(context.dest_dir, 'etc', 'shadow'),
+        'root:$1$GT9AUpJe$oXANVIjIzcnmOpY07iaGi/:14657::::::'
+    )
+    write_text_to_file(
+        os.path.join(context.dest_dir, 'etc', 'hostname'),
+        'bootstrap'
+    )
+
+    pacman_config_path = os.path.join(context.dest_dir, 'etc', 'pacman.conf')
+    call_shell_command([
+        'sed', '-i', 's/^[[:space:]]*\(CheckSpace\)/# \1/',
+        pacman_config_path
+        ])
+    call_shell_command([
+            'sed', '-i', 's/^[[:space:]]*SigLevel[[:space:]]*=.*$/SigLevel = Never/',
+            pacman_config_path
+        ])
+
+    # coy cert
+    name = 'ca-certificates.crt'
+    shutil.copyfile(
+        './certs/%s' % name,
+        os.path.join(context.dest_dir, 'etc', 'ssl', 'certs', name)
+    )
+
+
 @click.command()
 @click.option('-a', '--arch', default='x86_64')
 @click.option('-r', '--repo', default='https://mirrors.tuna.tsinghua.edu.cn/manjaro')
@@ -256,6 +321,9 @@ def main(arch, repo, work_dir, download_dir):
     fetch_packages(context)
 
     install_pacman_packages(context, BASIC_PACKAGES)
+
+    configure_pacman(context)
+    configure_minimal_system(context)
 
 
 if __name__ == '__main__':
