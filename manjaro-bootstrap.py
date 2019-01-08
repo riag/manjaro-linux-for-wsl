@@ -24,9 +24,10 @@ DEFAULT_ARM_REPO_URL = "http://mirror.archlinuxarm.org"
 DEFAULT_BRANCH = "stable"
 
 
+# gpgme 依赖 gnupg
 BASIC_PACKAGES = (
   'libunistring', 'zstd', 'libidn2', 'acl', 'archlinux-keyring',
-  'attr', 'bzip2', 'curl', 'expat', 'glibc', 'gpgme', 'libarchive',
+  'attr', 'bzip2', 'curl', 'expat', 'glibc',  'libarchive',
   'libassuan', 'libgpg-error', 'libnghttp2', 'libssh2', 'lzo',
   'openssl', 'pacman', 'xz', 'zlib',
   'krb5', 'e2fsprogs', 'keyutils', 'libidn', 'gcc-libs', 'lz4',
