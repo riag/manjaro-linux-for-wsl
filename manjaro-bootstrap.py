@@ -36,7 +36,7 @@ BASIC_PACKAGES = (
 current_dir = os.path.abspath(os.getcwd())
 script_dir = os.path.abspath(os.path.dirname(__file__))
 
-default_build_dir = os.path.join(script_dir, 'build')
+default_build_dir = os.path.expanduser('~/manjaro-linux-wsl-build')
 default_download_dir = os.path.join(default_build_dir, 'download')
 dist_dir = os.path.join(script_dir, 'dist')
 
@@ -84,6 +84,8 @@ class BootstrapContext(object):
         self.work_dir = work_dir
         self.download_dir = download_dir
         self.dest_dir = os.path.join(work_dir, 'wsl-dist', 'root.%s' % arch)
+
+        self.debug = False
 
         call_shell_command(
             ['mkdir', '-p', self.dest_dir]
@@ -189,7 +191,6 @@ def fetch_packages(context: BootstrapContext):
             print("cannot parse package update time, line is %s" % line)
             sys.exit(-1)
         update_time_str = match.group(1)
-        print("update time %s" % update_time_str)
         update_time = datetime.datetime.strptime(
             update_time_str, update_time_fmt
             )
@@ -200,7 +201,6 @@ def fetch_packages(context: BootstrapContext):
         if t is not None and version < t.version:
             continue
 
-        print("package is %s, %s" % (name, package))
         p = PackageInfo(name, version, package, update_time)
         package_map[name] = p
 
@@ -265,6 +265,10 @@ def write_text_to_file(filepath, text):
         f.write(text)
 
 
+def append_text_to_file(fpath, text, encoding='utf-8'):
+    with io.open(fpath, 'a',encoding=encoding) as f:
+        f.write(text)
+
 def configure_pacman(context: BootstrapContext):
     print("configure DNS and pacman")
     shutil.copyfile(
@@ -315,6 +319,23 @@ def configure_minimal_system(context: BootstrapContext):
         os.path.join(context.dest_dir, 'etc', 'ssl', 'certs', name)
     )
 
+    # copy os-release, issue
+    for name in ('os-release', 'issue'):
+        shutil.copyfile(
+            './configs/%s' % name,
+            os.path.join(context.dest_dir, 'etc', name)
+        )
+
+def configure_locale(context: BootstrapContext):
+
+    append_text_to_file(
+        os.path.join(context.dest_dir, 'etc', 'locale.gen'),
+        '\nen_US.UTF-8 UTF-8\n'
+    )
+    call_shell_command([
+        'chroot', context.dest_dir, 'locale-gen'
+    ])
+
 
 def install_packages(context: BootstrapContext, package_list):
 
@@ -323,14 +344,29 @@ def install_packages(context: BootstrapContext, package_list):
 
     cmd_list = ['chroot', context.dest_dir, '/usr/bin/pacman',
         '--noconfirm', '--arch', context.arch, '-Sy',
-        '--overwrite', '\'*\'']
+        '--overwrite', '\'*\'', '--force']
+    if context.debug:
+        cmd_list.append('--debug')
     cmd_list.extend(package_list)
     #cmd_list = 'chroot %s /usr/bin/pacman --noconfirm --arch %s' % (
     #    context.dest_dir, context.arch
     #)
     #cmd_list = cmd_list + ' -Sy --overwrite \'*\' ' + ' '.join(package_list)
-    p = call_shell_command(cmd_list, check=False, shell=False)
-    print(p)
+    call_shell_command(cmd_list, check=True, shell=False)
+
+
+def load_package_file(filepath):
+    pkg_list = []
+    with io.open(filepath, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            if line .startswith('#'):
+                continue
+            pkg_list.append(line)
+
+    return pkg_list
 
 
 @click.command()
@@ -338,12 +374,15 @@ def install_packages(context: BootstrapContext, package_list):
 @click.option('-r', '--repo', default='https://mirrors.tuna.tsinghua.edu.cn/manjaro')
 @click.option('-w', '--work-dir', default=default_build_dir)
 @click.option('--download-dir', default=default_download_dir)
-def main(arch, repo, work_dir, download_dir):
+@click.option('--pkg', 'package_file', required=True)
+@click.option('--debug', flag=True, default=False)
+def main(arch, repo, work_dir, download_dir, package_file, debug):
 
     context = BootstrapContext(
         work_dir, download_dir,
         DEFAULT_BRANCH, arch)
     context.set_repo_url(repo)
+    context.debug = debug
 
     fetch_packages(context)
 
@@ -354,15 +393,22 @@ def main(arch, repo, work_dir, download_dir):
 
     install_packages(context, BASIC_PACKAGES)
 
+    # 不知道为啥 grep file 这 2 个包不能安装
     install_packages(context,
-        ('coreutils', 'bash', 'grep', 'gawk', 'sed',
-        'file', 'tar', 'manjaro-release', 'which'
+        ('bash', 'gawk', 'sed', 'tar',
+        'manjaro-release', 'which', 'coreutils',
+        'findutils', 'grep', 'file', 'pamac'
         )
     )
+    #configure_locale(context)
 
     # TODO: 安装其他软件
+    package_list = load_package_file(package_file)
+    install_packages(context, package_list)
 
-    configure_pacman(context)
+    # clean /var/cache/pacman/pkg 下包
+
+    #configure_pacman(context)
 
 
 if __name__ == '__main__':

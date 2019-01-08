@@ -12,7 +12,6 @@ iproute2
 iputils
 procps
 
-pamac
 zsh
 zip
 tmux
