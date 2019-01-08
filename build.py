@@ -15,7 +15,7 @@ default_build_dir = os.path.join(script_dir, 'build')
 dist_dir = os.path.join(script_dir, 'dist')
 
 work_dir = ''
-download_dir = '' 
+download_dir = ''
 linux_dest_dir = ''
 
 dist_file_name=''
@@ -35,7 +35,7 @@ def prepare(arg_work_dir, arch):
             )
 
     dist_file_name = 'manjaro-linux-wsl-%s-%s.tar.gz' % (
-            arch, pybee.get_curr_date_time('%Y-%m-%d') 
+            arch, pybee.get_curr_date_time('%Y-%m-%d')
             )
 
     pybee.path.mkdir(download_dir, True)
@@ -77,11 +77,6 @@ def exec_command_in_chroot_env(dest_dir, cmd, **kwargs):
     pybee.shell.exec(c, **kwargs)
 
 def make_wsl_linux_dist():
-    with working_dir(os.path.join(script_dir, 'configs')):
-        pybee.path.copyfiles(
-                ['os-release', 'issue'],
-                os.path.join(linux_dest_dir, 'etc')
-                )
 
     append_text_to_file(
             os.path.join(linux_dest_dir, 'etc', 'locale.gen'),
@@ -107,7 +102,7 @@ def make_wsl_linux_dist():
     '''
 
     exec_command_in_chroot_env(
-            linux_dest_dir, ['pacman', '-Scc' ], 
+            linux_dest_dir, ['pacman', '-Scc' ],
             input='yes\nyes\n'.encode('utf-8')
             )
 
@@ -122,7 +117,7 @@ def pack():
     cwd_dir = os.path.dirname(linux_dest_dir)
     with working_dir(cwd_dir):
         cmd = ' '.join(
-                ['tar', '--ignore-failed-read', 
+                ['tar', '--ignore-failed-read',
                     '-czvf', p, '*']
                 )
         pybee.shell.exec(
