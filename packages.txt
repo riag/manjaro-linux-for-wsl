@@ -19,4 +19,4 @@ git
 python3
 python-pip
 
-#neovim
+neovim
