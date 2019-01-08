@@ -375,7 +375,7 @@ def load_package_file(filepath):
 @click.option('-w', '--work-dir', default=default_build_dir)
 @click.option('--download-dir', default=default_download_dir)
 @click.option('--pkg', 'package_file', required=True)
-@click.option('--debug', flag=True, default=False)
+@click.option('--debug', is_flag=True, default=False)
 def main(arch, repo, work_dir, download_dir, package_file, debug):
 
     context = BootstrapContext(
@@ -393,20 +393,21 @@ def main(arch, repo, work_dir, download_dir, package_file, debug):
 
     install_packages(context, BASIC_PACKAGES)
 
-    # 不知道为啥 grep file 这 2 个包不能安装
     install_packages(context,
         ('bash', 'gawk', 'sed', 'tar',
         'manjaro-release', 'which', 'coreutils',
         'findutils', 'grep', 'file', 'pamac'
         )
     )
-    #configure_locale(context)
 
-    # TODO: 安装其他软件
+    # 安装其他软件
     package_list = load_package_file(package_file)
     install_packages(context, package_list)
 
+    configure_locale(context)
+
     # clean /var/cache/pacman/pkg 下包
+
 
     #configure_pacman(context)
 
