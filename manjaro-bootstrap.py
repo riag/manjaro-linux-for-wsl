@@ -11,6 +11,8 @@ import shutil
 
 import click
 
+#os.environ['LC_ALL'] = 'C'
+
 core_repo_package_pattern = re.compile(r'^.*?<a\s+[^>]*?href="([^\"]*?)".*?$')
 package_name_pattern = re.compile(r'([A-Za-z].*?)-(\d[\w\-\.:+]*)-(any|x86_64).*\.(xz|gz)')
 package_update_time_pattern = re.compile(r'(\d+\-\w+\-\d+\s\d+\:\d+)')
@@ -46,10 +48,13 @@ def execute_shell_command(cmd_list, work_dir=None):
 
 
 def call_shell_command(cmd_list, work_dir=None, check=True, shell=False):
-    print("exec: ", ' '.join(cmd_list))
+    if isinstance(cmd_list, (list, tuple)):
+        print("exec: ", ' '.join(cmd_list))
+    else:
+        print("exec: ", cmd_list)
     return subprocess.run(
         cmd_list, check=check, shell=shell,
-        cwd=work_dir).returncode
+        cwd=work_dir)
 
 
 class PipeCommand(object):
@@ -90,6 +95,7 @@ class BootstrapContext(object):
         self.arch = arch
         self.branch = branch
 
+        self.base_repo_url = ''
         self.repo_url = ''
         self.core_repo_url = ''
         if self.arch.startswith('arm'):
@@ -102,14 +108,18 @@ class BootstrapContext(object):
 
     def set_repo_url(self, repo):
         if self.arch.startswith('arm'):
-            self.repo_url = repo
+            self.base_repo_url = repo
+            self.repo_url = '%s/%s' % (repo, self.arch)
             self.core_repo_url = '%s/%s/%s' % (
-                self.repo_url, self.arch, 'core'
+                self.base_repo_url, self.arch, 'core'
                 )
         else:
-            self.repo_url = repo
+            self.base_repo_url = repo
+            self.repo_url = '%s/%s/%s/%s' % (
+                repo, self.branch, '$repo', self.arch
+            )
             self.core_repo_url = '%s/%s/%s/%s' % (
-                self.repo_url, self.branch, 'core', self.arch
+                self.base_repo_url, self.branch, 'core', self.arch
                 )
 
 
@@ -306,6 +316,23 @@ def configure_minimal_system(context: BootstrapContext):
     )
 
 
+def install_packages(context: BootstrapContext, package_list):
+
+    print("install package: ")
+    print(package_list)
+
+    cmd_list = ['chroot', context.dest_dir, '/usr/bin/pacman',
+        '--noconfirm', '--arch', context.arch, '-Sy',
+        '--overwrite', '\'*\'']
+    cmd_list.extend(package_list)
+    #cmd_list = 'chroot %s /usr/bin/pacman --noconfirm --arch %s' % (
+    #    context.dest_dir, context.arch
+    #)
+    #cmd_list = cmd_list + ' -Sy --overwrite \'*\' ' + ' '.join(package_list)
+    p = call_shell_command(cmd_list, check=False, shell=False)
+    print(p)
+
+
 @click.command()
 @click.option('-a', '--arch', default='x86_64')
 @click.option('-r', '--repo', default='https://mirrors.tuna.tsinghua.edu.cn/manjaro')
@@ -324,6 +351,18 @@ def main(arch, repo, work_dir, download_dir):
 
     configure_pacman(context)
     configure_minimal_system(context)
+
+    install_packages(context, BASIC_PACKAGES)
+
+    install_packages(context,
+        ('coreutils', 'bash', 'grep', 'gawk', 'sed',
+        'file', 'tar', 'manjaro-release', 'which'
+        )
+    )
+
+    # TODO: 安装其他软件
+
+    configure_pacman(context)
 
 
 if __name__ == '__main__':
