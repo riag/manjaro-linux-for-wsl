@@ -328,6 +328,8 @@ def configure_minimal_system(context: BootstrapContext):
 
 def configure_locale(context: BootstrapContext):
 
+    print("configure locale")
+
     append_text_to_file(
         os.path.join(context.dest_dir, 'etc', 'locale.gen'),
         '\nen_US.UTF-8 UTF-8\n'
@@ -407,9 +409,15 @@ def main(arch, repo, work_dir, download_dir, package_file, debug):
     configure_locale(context)
 
     # clean /var/cache/pacman/pkg 下包
+    print("clean pacman pkg")
+    pacman_pkg_dir = os.path.join(
+        context.dest_dir, 'var', 'cache', 'pacman', 'pkg'
+        )
+    call_shell_command(
+        'rm -rf %s/*' % pacman_pkg_dir, shell=True
+    )
 
-
-    #configure_pacman(context)
+    configure_pacman(context)
 
 
 if __name__ == '__main__':
