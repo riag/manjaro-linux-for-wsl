@@ -408,7 +408,7 @@ def main(arch, repo, work_dir, download_dir, package_file, debug):
     install_packages(context,
         ('bash', 'gawk', 'sed', 'tar',
         'manjaro-release', 'which', 'coreutils',
-        'findutils', 'grep', 'file', 'pamac'
+        'findutils', 'grep', 'file', 
         )
     )
 
