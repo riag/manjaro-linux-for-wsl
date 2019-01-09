@@ -412,7 +412,6 @@ def main(arch, repo, work_dir, download_dir, package_file, debug):
     context.debug = debug
 
     fetch_packages(context)
-    sys.exit(-1)
 
     install_pacman_packages(context, BASIC_PACKAGES)
 
