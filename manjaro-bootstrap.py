@@ -126,6 +126,12 @@ class BootstrapContext(object):
 
 
 def fetch(context: BootstrapContext):
+    p = os.path.join(context.work_dir, 'core.repo')
+    # 检测文件的时间
+    if os.path.isfile(p):
+        with io.open(p, 'r', encoding='utf-8') as f:
+            return f.read()
+
     output = execute_shell_command(
         ['curl', '-L', '-s', context.core_repo_url]
     )
@@ -133,7 +139,6 @@ def fetch(context: BootstrapContext):
         return None
 
     output = output.decode('utf-8')
-    p = os.path.join(context.work_dir, '%s-core.repo' % context.arch)
     with io.open(p, 'w', encoding='utf-8') as f:
         f.write(output)
 
@@ -161,6 +166,11 @@ ignore_package = ('../', 'core.db', 'core.db.tar.gz', 'core.files', 'core.files.
 
 
 def fetch_packages(context: BootstrapContext):
+    path = os.path.join(context.work_dir, 'core.pakcages.json')
+    if os.path.isfile(path):
+        with io.open(path, 'r', encoding='utf-8') as f:
+            pass
+
     output = fetch(context)
     sio = io.StringIO(output)
     package_map = {}
@@ -204,7 +214,6 @@ def fetch_packages(context: BootstrapContext):
         p = PackageInfo(name, version, package, update_time)
         package_map[name] = p
 
-    path = os.path.join(context.work_dir, 'core.pakcages.json')
     with io.open(path, 'w', encoding='utf-8') as f:
         m = {}
         for k, v in package_map.items():
