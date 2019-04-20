@@ -29,7 +29,7 @@ BASIC_PACKAGES = (
   'libunistring', 'zstd', 'libidn2', 'acl', 'archlinux-keyring',
   'attr', 'bzip2', 'curl', 'expat', 'glibc',  'libarchive',
   'libassuan', 'libgpg-error', 'libnghttp2', 'libssh2', 'lzo',
-  'openssl', 'pacman', 'xz', 'zlib',
+  'openssl', 'gpgme', 'pacman', 'xz', 'zlib',
   'krb5', 'e2fsprogs', 'keyutils', 'libidn', 'gcc-libs', 'lz4',
   'libpsl', 'icu', 'filesystem'
 )
@@ -371,6 +371,32 @@ def load_package_file(filepath):
 
     return pkg_list
 
+def mount(*argv):
+    return call_shell_command(argv)
+
+def init_mountpoint(context:BootstrapContext):
+
+    mount('proc',
+        os.path.join(context.dest_dir, 'proc'),
+        '-t', 'proc', '-o',
+        'nosuid,noexec,nodev'
+    )
+    mount('sys',
+        os.path.join(context.dest_dir, 'sys'),
+        '-t', 'sysfs', '-o'
+        'nosuid,noexec,nodev,ro'
+    )
+    mount('run',
+        os.path.join(context.dest_dir, 'run'),
+        '-t', 'tmpfs', '-o',
+        'nosuid,nodev,mode=0755'
+    )
+    mount('tmp',
+        os.path.join(context.dest_dir, 'tmp'),
+        '-t', 'tmpfs', '-o',
+        ' mode=1777,strictatime,nodev,nosuid'
+    )
+
 
 @click.command()
 @click.option('-a', '--arch', default='x86_64')
@@ -386,6 +412,10 @@ def main(arch, repo, work_dir, download_dir, package_file, debug):
         DEFAULT_BRANCH, arch)
     context.set_repo_url(repo)
     context.debug = debug
+
+    init_mountpoint(context)
+
+    sys.exit(-1)
 
     fetch_packages(context)
 
