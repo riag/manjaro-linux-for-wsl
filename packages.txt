@@ -23,3 +23,4 @@ python-pip
 neovim
 xclip
 xsel
+dbus

@@ -6,7 +6,7 @@ import io
 import sys
 from urllib import request
 import datetime
-import json
+import simplejson as json
 import shutil
 
 import click
@@ -88,6 +88,11 @@ class BootstrapContext(object):
 
         self.debug = False
 
+        now = datetime.datetime.now()
+        # 如果文件修改时间在这个时间之前
+        # 就认为文件比较旧，需要更新
+        self.outof_date = now - datetime.timedelta(days = 2)
+
         call_shell_command(
             ['mkdir', '-p', self.dest_dir]
         )
@@ -126,7 +131,23 @@ class BootstrapContext(object):
                 )
 
 
+def get_file_modification_date(filepath):
+    t = os.path.getmtime(filepath)
+    return datetime.datetime.fromtimestamp(t)
+
+
+def file_is_outofday(context: BootstrapContext, filepath):
+    date = get_file_modification_date(filepath)
+    return date < context.outof_date
+
+
 def fetch(context: BootstrapContext):
+    p = os.path.join(context.work_dir, 'core.repo')
+    # 检测文件的时间
+    if os.path.isfile(p) and not file_is_outofday(context, p):
+        with io.open(p, 'r', encoding='utf-8') as f:
+            return f.read()
+
     output = execute_shell_command(
         ['curl', '-L', '-s', context.core_repo_url]
     )
@@ -134,7 +155,6 @@ def fetch(context: BootstrapContext):
         return None
 
     output = output.decode('utf-8')
-    p = os.path.join(context.work_dir, '%s-core.repo' % context.arch)
     with io.open(p, 'w', encoding='utf-8') as f:
         f.write(output)
 
@@ -142,18 +162,16 @@ def fetch(context: BootstrapContext):
 
 
 class PackageInfo(object):
-    def __init__(self, name, version, file_name, update_time):
+    def __init__(self, name, version, file_name):
         self.name = name
         self.version = version
         self.file_name = file_name
-        self.update_time = update_time
 
     def to_map(self):
         m = {
             'name': self.name,
             'version': self.version,
             'file_name': self.file_name,
-            #'update_time': self.update_time.time()
         }
         return m
 
@@ -162,6 +180,15 @@ ignore_package = ('../', 'core.db', 'core.db.tar.gz', 'core.files', 'core.files.
 
 
 def fetch_packages(context: BootstrapContext):
+    path = os.path.join(context.work_dir, 'core.packages.json')
+    if os.path.isfile(path) and not file_is_outofday(context, path):
+        with io.open(path, 'r', encoding='utf-8') as f:
+            d = json.load(f)
+            m = {}
+            for k, v in d.items():
+                m[k] = PackageInfo(**v)
+            return m
+
     output = fetch(context)
     sio = io.StringIO(output)
     package_map = {}
@@ -197,15 +224,12 @@ def fetch_packages(context: BootstrapContext):
             )
 
         t = package_map.get(name, None)
-        #if t is not None and update_time < t.update_time:
-        #    continue
         if t is not None and version < t.version:
             continue
 
-        p = PackageInfo(name, version, package, update_time)
+        p = PackageInfo(name, version, package)
         package_map[name] = p
 
-    path = os.path.join(context.work_dir, 'core.pakcages.json')
     with io.open(path, 'w', encoding='utf-8') as f:
         m = {}
         for k, v in package_map.items():
@@ -254,7 +278,7 @@ def install_pacman_packages(context: BootstrapContext, package_name_list):
             print("not support package name %s in core repo" % name)
             sys.exit(-1)
 
-        filepath = os.path.join(context.download_dir, package_info.file_name).replace(':', '-')
+        filepath = os.path.join(context.download_dir, package_info.file_name)#.replace(':', '-')
         package_url = context.core_repo_url + '/' + package_info.file_name
         fetch_file(filepath, package_url)
 
@@ -429,7 +453,7 @@ def main(arch, repo, work_dir, download_dir, package_file, debug):
     install_packages(context,
         ('bash', 'gawk', 'sed', 'tar',
         'manjaro-release', 'which', 'coreutils',
-        'findutils', 'grep', 'file', 'pamac'
+        'findutils', 'grep', 'file',
         )
     )
 

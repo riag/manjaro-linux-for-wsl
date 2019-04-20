@@ -2,7 +2,6 @@
 
 import click
 import os
-import subprocess
 import io
 
 import pybee
