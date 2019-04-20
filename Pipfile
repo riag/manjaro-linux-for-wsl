@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+click = "*"
 
 [dev-packages]
 pybee = {file = "https://github.com/riag/pybee/releases/download/0.1.0/pybee-0.1.0-py3-none-any.whl"}
-
