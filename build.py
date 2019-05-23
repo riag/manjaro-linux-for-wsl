@@ -3,6 +3,7 @@
 import click
 import os
 import io
+import sys
 
 import pybee
 from pybee.path import working_dir
@@ -10,7 +11,8 @@ from pybee.path import working_dir
 current_dir = os.path.abspath(os.getcwd())
 script_dir = os.path.abspath(os.path.dirname(__file__))
 
-default_build_dir = os.path.join(script_dir, 'build')
+#default_build_dir = os.path.join(script_dir, 'build')
+default_build_dir = os.path.expanduser('~/manjaro-linux-wsl-build')
 dist_dir = os.path.join(script_dir, 'dist')
 
 work_dir = ''
@@ -48,7 +50,7 @@ def prepare(arg_work_dir, arch):
             )
 
 
-def make_bootstrap(arch, repo):
+def make_bootstrap_with_shell(arch, repo):
     cmd_list = [
             './manjaro-bootstrap/manjaro-bootstrap.sh',
             '-a', arch,
@@ -59,6 +61,21 @@ def make_bootstrap(arch, repo):
     pybee.shell.exec(
             cmd_list
             )
+
+def make_bootstrap(arch, repo):
+    cmd_list = [
+            sys.executable,
+            os.path.join(script_dir, 'manjaro-bootstrap.py'),
+            '-a', arch,
+            '-r', repo,
+            '-d', download_dir,
+            '-w', work_dir,
+            '--pkg', 'packages.txt'
+            ]
+    pybee.shell.exec(
+            cmd_list
+            )
+
 def append_text_to_file(fpath, text, encoding='utf-8'):
     with io.open(fpath, 'a',encoding=encoding) as f:
         f.write(text)
@@ -77,11 +94,11 @@ def exec_command_in_chroot_env(dest_dir, cmd, **kwargs):
 
 def make_wsl_linux_dist():
 
-    append_text_to_file(
-            os.path.join(linux_dest_dir, 'etc', 'locale.gen'),
-            '\nen_US.UTF-8 UTF-8'
-            )
-    exec_command_in_chroot_env(linux_dest_dir, ['locale-gen'])
+#     append_text_to_file(
+#             os.path.join(linux_dest_dir, 'etc', 'locale.gen'),
+#             '\nen_US.UTF-8 UTF-8'
+#             )
+#     exec_command_in_chroot_env(linux_dest_dir, ['locale-gen'])
 
     with working_dir(os.path.join(script_dir, 'configs', 'profile.d')):
         pybee.path.copyfiles(
