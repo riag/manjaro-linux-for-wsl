@@ -187,6 +187,7 @@ def fetch_packages(context: BootstrapContext):
             m = {}
             for k, v in d.items():
                 m[k] = PackageInfo(**v)
+            context.core_package_map = m
             return m
 
     output = fetch(context)
@@ -364,14 +365,17 @@ def configure_locale(context: BootstrapContext):
     ])
 
 
-def install_packages(context: BootstrapContext, package_list):
+def install_packages(context: BootstrapContext, package_list, force=False):
 
     print("install package: ")
     print(package_list)
 
     cmd_list = ['chroot', context.dest_dir, '/usr/bin/pacman',
-        '--noconfirm', '--arch', context.arch, '-Sy',
-        '--overwrite', '\'*\'', '--force']
+        '--noconfirm', '--arch', context.arch, '-Sy',]
+    if force:
+        cmd_list.extend([
+            '--overwrite', '\'*\'', '--force'
+            ])
     if context.debug:
         cmd_list.append('--debug')
     cmd_list.extend(package_list)
@@ -426,7 +430,7 @@ def init_mountpoint(context:BootstrapContext):
 @click.option('-a', '--arch', default='x86_64')
 @click.option('-r', '--repo', default='https://mirrors.tuna.tsinghua.edu.cn/manjaro')
 @click.option('-w', '--work-dir', default=default_build_dir)
-@click.option('--download-dir', default=default_download_dir)
+@click.option('-d', '--download-dir', default=default_download_dir)
 @click.option('--pkg', 'package_file', required=True)
 @click.option('--debug', is_flag=True, default=False)
 def main(arch, repo, work_dir, download_dir, package_file, debug):
@@ -437,9 +441,13 @@ def main(arch, repo, work_dir, download_dir, package_file, debug):
     context.set_repo_url(repo)
     context.debug = debug
 
-    init_mountpoint(context)
-
-    sys.exit(-1)
+    #init_mountpoint(context)
+    # clean db.lock file
+    db_lock_file = os.path.join(
+        context.dest_dir, 'var', 'lib', 'pacman', 'db.lck'
+        )
+    if os.path.isfile(db_lock_file):
+        os.unlink(db_lock_file)
 
     fetch_packages(context)
 
@@ -448,7 +456,7 @@ def main(arch, repo, work_dir, download_dir, package_file, debug):
     configure_pacman(context)
     configure_minimal_system(context)
 
-    install_packages(context, BASIC_PACKAGES)
+    install_packages(context, BASIC_PACKAGES, True)
 
     install_packages(context,
         ('bash', 'gawk', 'sed', 'tar',
