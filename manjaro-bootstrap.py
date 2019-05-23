@@ -81,10 +81,10 @@ def pipe_call_shell_command(pipe_cmd_list):
 
 
 class BootstrapContext(object):
-    def __init__(self, work_dir, download_dir, branch, arch=None):
+    def __init__(self, work_dir, download_dir, branch, arch):
         self.work_dir = work_dir
         self.download_dir = download_dir
-        self.dest_dir = os.path.join(work_dir, 'wsl-dist', 'root.%s' % arch)
+        self.dest_dir = os.path.join(work_dir, arch, 'wsl-dist', 'root.%s' % arch)
 
         self.debug = False
 
