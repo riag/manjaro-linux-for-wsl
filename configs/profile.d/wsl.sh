@@ -1,7 +1,7 @@
 #!/bin/sh
 
 IS_WSL="false"
-if [ -n `grep -i microsoft /proc/version` ];then
+if [ -n "`grep -i microsoft /proc/version`" ];then
   IS_WSL="true"
 fi
 
@@ -10,10 +10,10 @@ export IS_WSL
 
 winenv_path=~/.winenv.sh
 
-function update_winenv(){
+function update-winenv(){
     local f="$winenv_path"
     [ -f "$f" ] && rm -f "$f" 
-    touch $f
+    touch "$f"
 
     echo "generate $f ....."
     local p=`pywslpath -u --home`
@@ -41,7 +41,7 @@ function update_winenv(){
     echo "export WINDOWDIR=\"$p\"" >> "$f"
 
     p=`pywslpath -u --programdata`
-    echo "export PROGRAMDATA=\"$p\"" >> "$"
+    echo "export PROGRAMDATA=\"$p\"" >> "$f"
 
     echo "load $f file"
     source "$f"
@@ -49,7 +49,7 @@ function update_winenv(){
     if [ "$SHELL" = '/usr/bin/zsh' ];then
         f=~/.zprofile
         [ -f "$f" ] && rm -f "$f" 
-        touch $f
+        touch "$f"
         echo "generate $f ....."
 
         echo "hash -d winhome=\$WINHOME" >> "$f"
@@ -67,11 +67,11 @@ function update_winenv(){
 if [ -f "$winenv_path" ]; then
 	source "$winenv_path"
 else
-	update_winenv
+	update-winenv
 fi
 
 
-function print_wsl_info(){
+function print-wsl-info(){
   if [ -n "$WSL_DISTRO_NAME" ];then
     echo "wsl distro name: $WSL_DISTRO_NAME"
   fi
@@ -99,7 +99,7 @@ function wopen(){
 	powershell.exe start "\"$p\""
 }
 
-function wopen_wsl_home(){
+function wopen-wsl-home(){
   if [ -z "$WSL_DISTRO_ROOTFS_DIR" ];then
     echo "please define WSL_DISTRO_ROOTFS_DIR env"
     return
