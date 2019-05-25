@@ -70,6 +70,11 @@ else
 	update-winenv
 fi
 
+local dbus_p="/var/lib/dbus/machine-id"
+if [ ! -f "$dbus_p" ]; then
+  dbus-uuidgen > "$dbus_p"
+fi
+
 
 function print-wsl-info(){
   if [ -n "$WSL_DISTRO_NAME" ];then
