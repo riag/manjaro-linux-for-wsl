@@ -119,3 +119,54 @@ function wcd(){
   fi
 }
 
+
+function find-vscode(){
+  if [ -n "$VSCODE_BIN" ];then
+    echo "$VSCODE_BIN"
+    return
+  fi
+  local code_bin="`which code`"
+  if [ -n "$code_bin" ];then
+    echo "$code_bin"
+    return
+  fi
+  code_bin="$LOCALAPPDATA/Programs/Microsoft VS Code/bin/code"
+  if [ -f "$code_bin" ];then
+    echo "$code_bin"
+    return
+  fi
+  code_bin="$LOCALAPPDATA/Programs/Microsoft VS Code Insiders/bin/code"
+  if [ -f "$code_bin" ];then
+    echo "$code_bin"
+    return
+  fi
+  echo ""
+}
+
+function vc(){
+  local code_bin=$(find-vscode)
+  if [ -z "$code_bin" ];then
+    echo "not found code"
+    return
+  fi
+  local p="$1"
+  if [ -z "$p" ];then
+    p="`pwd`"
+  fi
+  local p="`pywslpath -w -d $p`"
+  "$code_bin" -r "$p"
+}
+
+function vcn(){
+  local code_bin=$(find-vscode)
+  if [ -z "$code_bin" ];then
+    echo "not found code"
+    return
+  fi
+  local p="$1"
+  if [ -z "$p" ];then
+    p="`pwd`"
+  fi
+  local p="`pywslpath -w -d $p`"
+  "$code_bin" -n "$p"
+}
