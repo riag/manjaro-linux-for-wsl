@@ -122,6 +122,17 @@ def make_wsl_linux_dist():
             input='yes\nyes\n'.encode('utf-8')
             )
 
+    pybee.sed.replace_by_pattern_list(
+        os.path.join(linux_dest_dir, 'usr', 'share', 'dbus-1', 'session.conf'),
+        (
+            ('^(\s+)<listen>.*</listen>',
+             '\g<1><listen>tcp:host=localhost,port=0</listen>'),
+            ('^(\s+)<auth>EXTERNAL</auth>', '\g<1><auth>ANONYMOUS</auth>'),
+            ('^</busconfig>', '  <allow_anonymous/>\n</busconfig>'),
+        )
+    )
+
+
 def pack():
 
     print('')
