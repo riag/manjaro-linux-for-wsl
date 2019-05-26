@@ -1,10 +1,23 @@
 # manjaro-linux-for-wsl
 为 windows 10 WSL 而做的 Manjaro Linux 发行版本
 
-该项目是基于 [manjaro-bootstrap](https://gitlab.manjaro.org/tools/maintenance-tools/manjaro-bootstrap) 而做的，该发行版本只打包了最基本的软件
+该项目最初版本是基于 [manjaro-bootstrap](https://gitlab.manjaro.org/tools/maintenance-tools/manjaro-bootstrap) 而做的,
+从 2019-05-06 版本开始，就使用 python3 重写并优化了 manjaro-bootstrap 的逻辑
 
-## 分支说明
-  官方维护的 manjaro-bootstrap 有一些 bug，所以把原代码复制到分支 `manjaro-bootstrap` 下，`master`分支是 fix bug 后的代码
+## 内置软件
+
+该发行版本只打包了最基本的软件, 以及有用的开发工具
+
+* gzip, zip, unzip
+* net-tools
+* dnsutils
+* iproute2
+* iputils
+* zsh
+* tmux
+* python3, pip3
+* neovim
+* dbus
 
 ## 下载
 
@@ -16,7 +29,7 @@
 
 
 
-## 使用
+## 安装
 
 下载 tar 文件或者自己打包 tar 文件后，建议使用 [LxRunOffline](https://github.com/DDoSolitary/LxRunOffline) 来安装，可以使用下面命令来安装
 
@@ -25,6 +38,19 @@ LxRunOffline.exe install -n manjaro-linux -f ../manjaro-linux-wsl-x86_64-2018-11
 ```
 
 **注意** 要修改上面安装命令的参数要实际的值
+
+## 使用
+
+### 使用 windows 系统内置的 `bash` 命令
+  把 manjaro linux 安装成功后，需要把它设为默认分发版才行使用 `bash` 命令来启动
+
+### wsltty-launcher 工具
+  建议使用 [wsltty-launcher](https://github.com/riag/wsltty-launcher) 工具来启动，该工具已经默认设置了以下 3 个环境变量
+  ```
+  WSL_DISTRO_NAME : 当前 WSL Linux 的 distro name
+  WSL_DISTRO_GUID : 当前 WSL Linux 的 distro guid
+  WSL_DISTRO_ROOTFS_DIR  : 当前 WSL Linux 的 distro rootfs 路径
+  ```
 
 ## 打包
 
