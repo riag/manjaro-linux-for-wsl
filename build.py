@@ -43,24 +43,24 @@ def prepare(arg_work_dir, arch):
     pybee.path.mkdir(linux_dest_dir, True)
     pybee.path.mkdir(dist_dir, False)
 
-    pybee.shell.exec(
-            ['chmod', '+x',
-                './manjaro-bootstrap/manjaro-bootstrap.sh'
-            ]
-            )
+#     pybee.shell.exec(
+#             ['chmod', '+x',
+#                 './manjaro-bootstrap/manjaro-bootstrap.sh'
+#             ]
+#             )
 
 
-def make_bootstrap_with_shell(arch, repo):
-    cmd_list = [
-            './manjaro-bootstrap/manjaro-bootstrap.sh',
-            '-a', arch,
-            '-r', repo,
-            '-d', download_dir,
-            linux_dest_dir
-            ]
-    pybee.shell.exec(
-            cmd_list
-            )
+# def make_bootstrap_with_shell(arch, repo):
+#     cmd_list = [
+#             './manjaro-bootstrap/manjaro-bootstrap.sh',
+#             '-a', arch,
+#             '-r', repo,
+#             '-d', download_dir,
+#             linux_dest_dir
+#             ]
+#     pybee.shell.exec(
+#             cmd_list
+#             )
 
 def make_bootstrap(arch, repo):
     cmd_list = [
