@@ -10,7 +10,9 @@
 
 可以从百度网盘下载已经打包好的 tar 文件
 
-最新 release 版本: https://pan.baidu.com/s/1e4VN2lcWXXlipTLDMrwujw
+最新 release 版本(2019-05-26): https://pan.baidu.com/s/1OXZB6iQRA3h0NtuLoOZjWg  , 提取码为 m8j4
+
+2018-11-06 版本  : https://pan.baidu.com/s/1e4VN2lcWXXlipTLDMrwujw
 
 
 
