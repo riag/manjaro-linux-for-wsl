@@ -122,6 +122,10 @@ def make_wsl_linux_dist():
             input='yes\nyes\n'.encode('utf-8')
             )
 
+    exec_command_in_chroot_env(
+            linux_dest_dir, ['pip3', 'install', 'pywslpath' ],
+            )
+
     pybee.sed.replace_by_pattern_list(
         os.path.join(linux_dest_dir, 'usr', 'share', 'dbus-1', 'session.conf'),
         (
