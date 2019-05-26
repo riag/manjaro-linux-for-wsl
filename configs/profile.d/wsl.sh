@@ -12,6 +12,12 @@ winenv_path=~/.winenv.sh
 
 function update-winenv(){
     local f="$winenv_path"
+    if [ -z "$WSL_DISTRO_ROOTFS_DIR" ];then
+      touch "$f"
+      echo "please define env WSL_DISTRO_ROOTFS_DIR"
+      return
+    fi
+
     [ -f "$f" ] && rm -f "$f" 
     touch "$f"
 
