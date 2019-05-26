@@ -43,7 +43,7 @@ LxRunOffline.exe install -n manjaro-linux -f ../manjaro-linux-wsl-x86_64-2018-11
 ## 使用
 
 ### 使用 windows 系统内置的 `bash` 命令
-  把 manjaro linux 安装成功后，需要把它设为默认分发版才行使用 `bash` 命令来启动
+  把 manjaro linux 安装成功后，需要把它设为默认分发版才能使用 `bash` 命令来启动
 
 ### wsltty-launcher 工具
   建议使用 [wsltty-launcher](https://github.com/riag/wsltty-launcher) 工具来启动，该工具已经默认设置了以下 3 个环境变量
