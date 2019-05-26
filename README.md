@@ -18,6 +18,7 @@
 * python3, pip3
 * neovim
 * dbus
+* [pywslpath](https://github.com/riag/pywslpath)
 
 ## 下载
 
