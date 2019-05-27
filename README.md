@@ -40,7 +40,7 @@ LxRunOffline.exe install -n manjaro-linux -f ../manjaro-linux-wsl-x86_64-2018-11
 
 **注意** 要修改上面安装命令的参数要实际的值
 
-## 使用
+## 启动 WSL Linux
 
 ### 使用 windows 系统内置的 `bash` 命令
   把 manjaro linux 安装成功后，需要把它设为默认分发版才能使用 `bash` 命令来启动
@@ -52,6 +52,12 @@ LxRunOffline.exe install -n manjaro-linux -f ../manjaro-linux-wsl-x86_64-2018-11
   WSL_DISTRO_GUID : 当前 WSL Linux 的 distro guid
   WSL_DISTRO_ROOTFS_DIR  : 当前 WSL Linux 的 distro rootfs 路径
   ```
+
+第一次启动 manjaro-linux 后，要执行下面命令升级系统
+
+```
+pacman -Syu
+```
 
 ## 打包
 
