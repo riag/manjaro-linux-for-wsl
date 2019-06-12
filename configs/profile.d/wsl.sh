@@ -152,27 +152,29 @@ function find-vscode(){
 function vc(){
   local code_bin=$(find-vscode)
   if [ -z "$code_bin" ];then
-    echo "not found code"
+    echo "not found vs code"
     return
   fi
+  code_bin=`pywslpath -w -d $code_bin`
   local p="$1"
   if [ -z "$p" ];then
     p="`pwd`"
   fi
   local p="`pywslpath -w -d $p`"
-  "$code_bin" -r "$p"
+  cmd.exe /C "$code_bin" -r "$p"
 }
 
 function vcn(){
   local code_bin=$(find-vscode)
   if [ -z "$code_bin" ];then
-    echo "not found code"
+    echo "not found vs code"
     return
   fi
+  code_bin=`pywslpath -w -d $code_bin`
   local p="$1"
   if [ -z "$p" ];then
     p="`pwd`"
   fi
   local p="`pywslpath -w -d $p`"
-  "$code_bin" -n "$p"
+  cmd.exe /C "$code_bin" -n "$p"
 }
