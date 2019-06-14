@@ -126,6 +126,38 @@ function wcd(){
 }
 
 
+function download-winsudo(){
+  local dest_dir=~/.download
+  [ -d $dest_dir ] || mkdir $dest_dir
+  local out_file=winsudo.zip
+  local tmp_file=$out_file.temp
+  if [ ! -f "$dest_dir/$out_file" ];then
+    wget https://github.com/mattn/sudo/releases/download/v0.0.1/sudo-x86_64.zip -O $dest_dir/$tmp_file
+    mv $dest_dir/$tmp_file $dest_dir/$out_file
+  fi
+}
+
+function get-winsudo(){
+   if [ -f "$PROGRAMDATA/sudo.exe" ];then
+     return
+   fi
+   download-winsudo
+   unzip ~/.download/winsudo.zip -d $PROGRAMDATA
+}
+
+
+if [ -n "`which pywinservice`" ];then
+  get-winsudo
+
+  winsudo_bin="$PROGRAMDATA/sudo.exe"
+  alias winservice='pywinservice --winsudo-bin $winsudo_bin'
+fi
+
+if [ -n "`which pywinenv`" ];then
+  alias winenv='pywinenv'
+fi
+
+
 function find-vscode(){
   if [ -n "$VSCODE_BIN" ];then
     echo "$VSCODE_BIN"
