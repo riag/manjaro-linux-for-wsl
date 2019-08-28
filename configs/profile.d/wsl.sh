@@ -210,3 +210,36 @@ function vcn(){
   local p="`pywslpath -w -d $p`"
   cmd.exe /C "$code_bin" -n "$p"
 }
+
+
+function add-default-user(){
+  if [ -z "$LXRUNOFFILINE_HOME" ];then
+    echo "please define env name `LXRUNOFFILINE_HOME`, the dir of the tool LxRunOffline "
+    return
+  fi
+  if [ -z "$WSL_DISTRO_NAME" ];then
+    echo "please define env name WSL_DISTRO_NAME, the current wsl distro name"
+    return
+  fi
+
+  local name="$1"
+  if [ =z "$name" ];then
+    echo "usage: add-default-user <account>"
+    return
+  fi
+
+  local lxrunoffline_bin="$LXRUNOFFILINE_HOME/LxRunOffline.exe"
+  # 参考  WSL-DistroLauncher 项目的执行命令
+  # https://github.com/microsoft/WSL-DistroLauncher/blob/master/DistroLauncher/DistributionInfo.cpp
+  /usr/sbin/adduser --quiet --gecos '' $name
+  /usr/sbin/usermod -aG adm,cdrom,sudo,dip,plugdev $name
+
+  local account_id=`id -u $name`
+  if [ -z "$account_id" ];then
+    echo "fail to get id of user $name"
+    return
+  fi
+
+  echo "the id of $name is $account_id"
+  "$lxrunoffline_bin" -n $WSL_DISTRO_NAME su $account_id
+}
