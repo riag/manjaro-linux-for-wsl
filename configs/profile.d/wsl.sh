@@ -223,7 +223,7 @@ function add-default-user(){
   fi
 
   local name="$1"
-  if [ =z "$name" ];then
+  if [ -z "$name" ];then
     echo "usage: add-default-user <account>"
     return
   fi
@@ -231,8 +231,10 @@ function add-default-user(){
   local lxrunoffline_bin="$LXRUNOFFILINE_HOME/LxRunOffline.exe"
   # 参考  WSL-DistroLauncher 项目的执行命令
   # https://github.com/microsoft/WSL-DistroLauncher/blob/master/DistroLauncher/DistributionInfo.cpp
-  /usr/sbin/adduser --quiet --gecos '' $name
-  /usr/sbin/usermod -aG adm,cdrom,sudo,dip,plugdev $name
+  #/usr/sbin/adduser --quiet --gecos '' $name
+  #/usr/sbin/usermod -aG adm,cdrom,sudo,dip,plugdev $name
+  /usr/sbin/useradd $name
+  /usr/sbin/usermod -aG adm $name
 
   local account_id=`id -u $name`
   if [ -z "$account_id" ];then
@@ -241,5 +243,5 @@ function add-default-user(){
   fi
 
   echo "the id of $name is $account_id"
-  "$lxrunoffline_bin" -n $WSL_DISTRO_NAME su $account_id
+  "$lxrunoffline_bin" su -n $WSL_DISTRO_NAME -v $account_id
 }
