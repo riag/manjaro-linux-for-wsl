@@ -245,3 +245,30 @@ function add-default-user(){
   echo "the id of $name is $account_id"
   "$lxrunoffline_bin" su -n $WSL_DISTRO_NAME -v $account_id
 }
+
+function set-default-user(){
+
+  if [ -z "$LXRUNOFFILINE_HOME" ];then
+    echo "please define env name `LXRUNOFFILINE_HOME`, the dir of the tool LxRunOffline "
+    return
+  fi
+  if [ -z "$WSL_DISTRO_NAME" ];then
+    echo "please define env name WSL_DISTRO_NAME, the current wsl distro name"
+    return
+  fi
+
+  local name="$1"
+  if [ -z "$name" ];then
+    echo "usage: set-default-user <account>"
+    return
+  fi
+
+  local account_id=`id -u $name`
+  if [ -z "$account_id" ];then
+    echo "fail to get id of user $name"
+    return
+  fi
+
+  echo "the id of $name is $account_id"
+  "$lxrunoffline_bin" su -n $WSL_DISTRO_NAME -v $account_id
+}
