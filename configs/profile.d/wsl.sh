@@ -233,7 +233,7 @@ function add-default-user(){
   # https://github.com/microsoft/WSL-DistroLauncher/blob/master/DistroLauncher/DistributionInfo.cpp
   #/usr/sbin/adduser --quiet --gecos '' $name
   #/usr/sbin/usermod -aG adm,cdrom,sudo,dip,plugdev $name
-  /usr/sbin/useradd $name
+  /usr/sbin/useradd -m $name
   /usr/sbin/usermod -aG adm $name
 
   local account_id=`id -u $name`
