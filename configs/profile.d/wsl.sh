@@ -228,6 +228,8 @@ function add-default-user(){
     return
   fi
 
+  /usr/sbin/groupadd users
+
   local lxrunoffline_bin="$LXRUNOFFILINE_HOME/LxRunOffline.exe"
   # 参考  WSL-DistroLauncher 项目的执行命令
   # https://github.com/microsoft/WSL-DistroLauncher/blob/master/DistroLauncher/DistributionInfo.cpp
